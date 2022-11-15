@@ -6,8 +6,21 @@ import { nanoid } from "nanoid";
 
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks)
-  const taskList = tasks.map(task => <Todo key={task.id} id={task.id} name={task.name} completed={task.completed} />)
-
+  const taskList = tasks.map(task => (
+    <Todo
+      id={task.id}
+      key={task.id}
+      name={task.name}
+      completed={task.completed}
+      toogleTaskCompleted={toogleTaskCompleted}
+      deleteTask={deleteTask}
+    />
+  ))
+  const taskListSize = taskList.length
+  const taskNoun = taskListSize === 1 ? 'task' : 'tasks'
+  const headingText = `${taskListSize} ${taskNoun} remaining`
+  
+  
   function addTask(name) {
     if (name) {
       const newTask = { id: `todo-${nanoid()}`, name, completed: false }
@@ -15,10 +28,24 @@ function App(props) {
     }
   }
 
-  const taskListSize = taskList.length
-  const taskNoun = taskListSize === 1 ? 'task' : 'tasks'
-  const headingText = `${taskListSize} ${taskNoun} remaining`
+  function toogleTaskCompleted(id) {
+    const updatedTasks = tasks.map(task => {
+      if (id === task.id) {
+        return {...task, completed: !task.completed}
+      }
 
+      return task
+    })
+
+    setTasks(updatedTasks)
+  }
+
+  function deleteTask(id) {
+    const remainingTasks = tasks.filter(task => id !== task.id)
+
+    setTasks(remainingTasks)
+  }
+  
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
