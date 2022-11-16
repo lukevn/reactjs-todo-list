@@ -10,9 +10,11 @@ function Todo(props) {
 
   function handleSubmit(e) {
     e.preventDefault()
-    props.editTask(props.id, newName)
-    setNewName('')
-    setEditing(false)
+    if (newName) {
+      props.editTask(props.id, newName)
+      setNewName('')
+      setEditing(false)
+    }
   }
 
   const editingTemplate = (
@@ -21,7 +23,7 @@ function Todo(props) {
         <label className="todo-label" htmlFor={props.id}>
           New name for {props.name}
         </label>
-        <input id={props.id} className="todo-text" type="text" onChange={handleChange} />
+        <input id={props.id} className="todo-text" type="text" value={newName} onChange={handleChange} />
       </div>
       <div className="btn-group">
         <button type="button" className="btn todo-cancel" onClick={() => setEditing(false)}>
@@ -46,7 +48,7 @@ function Todo(props) {
           onChange={() => props.toggleTaskCompleted(props.id)}
         />
         <label className="todo-label" htmlFor={props.id}>
-          {newName || props.name}
+          {props.name}
         </label>
       </div>
       <div className="btn-group">
