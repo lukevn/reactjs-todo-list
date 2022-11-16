@@ -4,9 +4,18 @@ import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import { nanoid } from "nanoid";
 
+const FILTER_MAPS = {
+  All: () => true,
+  Active: task => !task.completed,
+  Completed: task => task.completed
+}
+
+const FILTER_NAMES = Object.keys(FILTER_MAPS)
+
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks)
-  const taskList = tasks.map(task => (
+  const [filter, setFilter] = useState('All')
+  const taskList = tasks.filter(FILTER_MAPS[filter]).map(task => (
     <Todo
       id={task.id}
       key={task.id}
@@ -20,8 +29,14 @@ function App(props) {
   const taskListSize = taskList.length
   const taskNoun = taskListSize === 1 ? 'task' : 'tasks'
   const headingText = `${taskListSize} ${taskNoun} remaining`
-  
-  
+  const filterList = FILTER_NAMES.map(name => <FilterButton
+    key={name}
+    name={name}
+    isPressed={name === filter}
+    setFilter={setFilter}
+  />)
+
+
   function addTask(name) {
     if (name) {
       const newTask = { id: `todo-${nanoid()}`, name, completed: false }
@@ -32,7 +47,7 @@ function App(props) {
   function toogleTaskCompleted(id) {
     const updatedTasks = tasks.map(task => {
       if (id === task.id) {
-        return {...task, completed: !task.completed}
+        return { ...task, completed: !task.completed }
       }
 
       return task
@@ -50,7 +65,7 @@ function App(props) {
   function editTask(id, newName) {
     const editedTaskList = tasks.map(task => {
       if (id === task.id) {
-        return {...task, name: newName}
+        return { ...task, name: newName }
       }
 
       return task
@@ -58,15 +73,13 @@ function App(props) {
 
     setTasks(editedTaskList)
   }
-  
+
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">
-        <FilterButton />
-        <FilterButton />
-        <FilterButton />
+        {filterList}
       </div>
       <h2 id="list-heading">
         {headingText}
